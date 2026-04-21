@@ -24,6 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
+  // Announcement elements
+  const announcementBanner = document.getElementById("announcement-banner");
+  const announcementText = document.getElementById("announcement-text");
+  const closeAnnouncement = document.getElementById("close-announcement");
 
   // Activity categories with corresponding colors
   const activityTypes = {
@@ -860,8 +864,31 @@ document.addEventListener("DOMContentLoaded", () => {
     setDayFilter,
     setTimeRangeFilter,
   };
+  async function loadAnnouncements() {
+    try {
+      const response = await fetch("/activities/announcements");
+      const announcements = await response.json();
+      
+      if (announcements.length > 0) {
+        // Display the first active announcement
+        const announcement = announcements[0];
+        announcementText.textContent = `${announcement.title}: ${announcement.message}`;
+        announcementBanner.classList.remove("hidden");
+      }
+    } catch (error) {
+      console.error("Failed to load announcements:", error);
+    }
+  }
+
+  function closeAnnouncementHandler() {
+    announcementBanner.classList.add("hidden");
+  }
+
+  // Event listeners for announcement banner
+  closeAnnouncement.addEventListener("click", closeAnnouncementHandler);
 
   // Initialize app
+  loadAnnouncements();
   checkAuthentication();
   initializeFilters();
   fetchActivities();

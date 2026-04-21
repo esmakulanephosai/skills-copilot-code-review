@@ -136,3 +136,19 @@ def unregister_from_activity(activity_name: str, email: str, teacher_username: O
             status_code=500, detail="Failed to update activity")
 
     return {"message": f"Unregistered {email} from {activity_name}"}
+
+@router.get("/announcements", response_model=List[Dict[str, Any]])
+def get_announcements() -> List[Dict[str, Any]]:
+    """
+    Get all active announcements
+    """
+    from ..database import announcements_collection
+    
+    # Get only active announcements
+    announcements = list(announcements_collection.find({"active": True}))
+    
+    # Remove MongoDB _id field and return
+    for announcement in announcements:
+        announcement.pop("_id", None)
+    
+    return announcements
